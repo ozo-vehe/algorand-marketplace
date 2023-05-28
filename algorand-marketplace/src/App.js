@@ -1,12 +1,12 @@
-import React, {useEffect, useState} from "react";
+import React, {useState} from "react";
 import './App.css';
 import MyAlgoConnect from "@randlabs/myalgo-connect";
 import {getProductsAction} from "./utils/marketplace";
 import Cover from "./components/Cover";
 import Wallet from "./components/Wallet";
 import {Container, Nav} from "react-bootstrap";
-// import Products from "./components/marketplace/Products";
-// import {Notification} from "./components/utils/Notifications";
+import Products from "./components/marketplace/Products";
+import {Notification} from "./components/utils/Notifications";
 import {indexerClient, myAlgoConnect} from "./utils/constants";
 import coverImg from "./assets/img/sandwich.jpg"
 
@@ -46,15 +46,9 @@ const App = function AppWrapper() {
       setBalance(null);
   };
 
-    useEffect(() => {
-        getProductsAction().then(products => {
-            setProducts(products)
-        });
-    }, []);
-
     return (
       <>
-          {/* <Notification /> */}
+          <Notification />
           {address ? (
               <Container fluid="md">
                   <Nav className="justify-content-end pt-3 pb-5">
@@ -69,7 +63,7 @@ const App = function AppWrapper() {
                       </Nav.Item>
                   </Nav>
                   <main>
-                      {/* <Products address={address} fetchBalance={fetchBalance}/> */}
+                      <Products address={address} fetchBalance={fetchBalance}/>
                   </main>
               </Container>
           ) : (

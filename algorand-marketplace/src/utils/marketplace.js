@@ -40,9 +40,9 @@ const compileProgram = async (programSource) => {
 export const createProductAction = async (senderAddress, product) => {
   console.log("Adding product...")
 
-  if(product.image?.length > 30) {
-      throw new Error("Image text is too long. Try a shorter url")
-  }
+//   if(product.image?.length > 30) {
+//       throw new Error("Image text is too long. Try a shorter url")
+//   }
 
   let params = await algodClient.getTransactionParams().do();
   params.fee = algosdk.ALGORAND_MIN_TX_FEE;
