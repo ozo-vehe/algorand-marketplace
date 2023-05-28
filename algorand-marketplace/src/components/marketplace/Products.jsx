@@ -16,6 +16,7 @@ const Products = ({address, fetchBalance}) => {
     try {
       setLoading(true);
       const products = await getProductsAction()
+      console.log(products)
       if (!products) {
         return
       }
