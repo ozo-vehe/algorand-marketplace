@@ -10,6 +10,8 @@ const config = {
     indexerPort: "",
 }
 
+export const ALGORAND_DECIMALS = 6;
+
 export const algodClient = new algosdk.Algodv2(config.algodToken, config.algodServer, config.algodPort)
 
 export const indexerClient = new algosdk.Indexer(config.indexerToken, config.indexerServer, config.indexerPort);
