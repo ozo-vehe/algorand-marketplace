@@ -1,0 +1,189 @@
+#pragma version 6
+txn ApplicationID
+int 0
+==
+bnz main_l20
+txn OnCompletion
+int DeleteApplication
+==
+bnz main_l19
+txna ApplicationArgs 0
+byte "buy"
+==
+bnz main_l16
+txna ApplicationArgs 0
+byte "update"
+==
+bnz main_l13
+txna ApplicationArgs 0
+byte "gift"
+==
+bnz main_l10
+txna ApplicationArgs 0
+byte "give_feedback"
+==
+bnz main_l7
+err
+main_l7:
+txna ApplicationArgs 1
+btoi
+int 1
+>=
+txna ApplicationArgs 1
+btoi
+int 5
+<=
+&&
+bnz main_l9
+int 0
+return
+main_l9:
+byte "RATING"
+byte "RATING"
+app_global_get
+txna ApplicationArgs 1
+btoi
++
+app_global_put
+byte "RATING_COUNT"
+byte "RATING_COUNT"
+app_global_get
+int 1
++
+app_global_put
+int 1
+return
+main_l10:
+txn Sender
+global CreatorAddress
+==
+txna ApplicationArgs 1
+global CreatorAddress
+!=
+&&
+txna ApplicationArgs 1
+global ZeroAddress
+!=
+&&
+bnz main_l12
+int 0
+return
+main_l12:
+byte "SOLD"
+int 0
+app_global_put
+byte "OWNER"
+txna ApplicationArgs 1
+app_global_put
+int 1
+return
+main_l13:
+txn Sender
+global CreatorAddress
+==
+txna ApplicationArgs 1
+btoi
+int 0
+>
+&&
+txna ApplicationArgs 2
+len
+int 0
+>
+&&
+bnz main_l15
+int 0
+return
+main_l15:
+byte "PRICE"
+txna ApplicationArgs 1
+btoi
+app_global_put
+byte "DESCRIPTION"
+txna ApplicationArgs 2
+app_global_put
+int 1
+return
+main_l16:
+global GroupSize
+int 2
+==
+gtxn 1 TypeEnum
+int pay
+==
+gtxn 1 Receiver
+global CreatorAddress
+==
+&&
+gtxn 1 Amount
+byte "PRICE"
+app_global_get
+txna ApplicationArgs 1
+btoi
+*
+==
+&&
+gtxn 1 Sender
+gtxn 0 Sender
+==
+&&
+&&
+bnz main_l18
+int 0
+return
+main_l18:
+byte "SOLD"
+byte "SOLD"
+app_global_get
+txna ApplicationArgs 1
+btoi
++
+app_global_put
+int 1
+return
+main_l19:
+txn Sender
+global CreatorAddress
+==
+return
+main_l20:
+txn NumAppArgs
+int 4
+==
+assert
+txn Note
+byte "marketplace:uv1"
+==
+assert
+txna ApplicationArgs 3
+btoi
+int 0
+>
+assert
+byte "NAME"
+txna ApplicationArgs 0
+app_global_put
+byte "IMAGE"
+txna ApplicationArgs 1
+app_global_put
+byte "DESCRIPTION"
+txna ApplicationArgs 2
+app_global_put
+byte "PRICE"
+txna ApplicationArgs 3
+btoi
+app_global_put
+byte "SOLD"
+int 0
+app_global_put
+byte "RATING"
+int 0
+app_global_put
+byte "RATING_COUNT"
+int 0
+app_global_put
+byte "OWNER"
+global CreatorAddress
+app_global_put
+int 1
+return
