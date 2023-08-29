@@ -4,7 +4,7 @@ import AddProduct from "./AddProduct";
 import Product from "./Product";
 import Loader from "../utils/Loader";
 import {NotificationError, NotificationSuccess} from "../utils/Notifications";
-import {buyProductAction, createProductAction, deleteProductAction, getProductsAction,} from "../../utils/marketplace";
+import {buyProductAction, createProductAction, deleteProductAction, giftProductAction, getProductsAction,} from "../../utils/marketplace";
 import PropTypes from "prop-types";
 import {Row} from "react-bootstrap";
 
@@ -19,6 +19,7 @@ const Products = ({address, fetchBalance}) => {
         if (!products) {
           return
         }
+        console.log(products);
   
         setProducts(products);
       } catch (e) {
@@ -78,6 +79,23 @@ const Products = ({address, fetchBalance}) => {
     }
   };
 
+  const giftProduct = async (product, receiver) => {
+    try {
+      console.log("Received");
+      console.log(receiver);
+      setLoading(true);
+      await giftProductAction(address, product.appId, receiver);
+      toast(<NotificationSuccess text="Product gifted successfully"/>);
+      getProducts();
+      fetchBalance(address);
+    } catch (error) {
+      console.log(error)
+      toast(<NotificationError text="Failed to gift product."/>);
+    } finally {
+      setLoading(false);
+    }
+  };
+
 	if (loading) {
     return <Loader/>;
   }
@@ -95,6 +113,7 @@ const Products = ({address, fetchBalance}) => {
                         product={product}
                         buyProduct={buyProduct}
                         deleteProduct={deleteProduct}
+                        giftProduct={giftProduct}
                         key={index}
                     />
                 ))}

@@ -26,12 +26,17 @@ const App = function AppWrapper() {
     };
 
     const connectWallet = async () => {
-        myAlgoConnect.connect()
+        const settings = {
+            shouldSelectOneAccount: true,
+            openManager: false
+        };
+        myAlgoConnect.connect(settings)
             .then(accounts => {
                 const _account = accounts[0];
                 setAddress(_account.address);
                 setName(_account.name);
                 fetchBalance(_account.address);
+                console.log(accounts)
             }).catch(error => {
             console.log('Could not connect to MyAlgo wallet');
             console.error(error);

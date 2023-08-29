@@ -79,7 +79,7 @@ class Product:
     def gift(self):
         new_owner = Txn.application_args[1]
 
-        is_owner = Txn.sender() == Global.creator_address()
+        is_owner = Txn.sender() == self.Variables.owner
 
         transfer_conditions = And(
             is_owner,
@@ -87,9 +87,8 @@ class Product:
             new_owner != Global.zero_address()  # Ensure the new owner address is valid
         )
 
-        transfer_state = Seq([
-            App.globalPut(self.Variables.sold, Int(0)),  # Reset sold count when ownership is transferred
-            App.globalPut(self.Variables.owner, new_owner),  # Update the owner to the new address
+        transfer_conditions = Seq([
+            App.globalPut(self.Variables.owner, Txn.application_args[1]),  # Update the owner to the new address
             Approve()
         ])
 

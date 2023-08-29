@@ -2,19 +2,19 @@
 txn ApplicationID
 int 0
 ==
-bnz main_l20
+bnz main_l18
 txn OnCompletion
 int DeleteApplication
 ==
-bnz main_l19
+bnz main_l17
 txna ApplicationArgs 0
 byte "buy"
 ==
-bnz main_l16
+bnz main_l14
 txna ApplicationArgs 0
 byte "update"
 ==
-bnz main_l13
+bnz main_l11
 txna ApplicationArgs 0
 byte "gift"
 ==
@@ -54,30 +54,12 @@ app_global_put
 int 1
 return
 main_l10:
-txn Sender
-global CreatorAddress
-==
-txna ApplicationArgs 1
-global CreatorAddress
-!=
-&&
-txna ApplicationArgs 1
-global ZeroAddress
-!=
-&&
-bnz main_l12
-int 0
-return
-main_l12:
-byte "SOLD"
-int 0
-app_global_put
 byte "OWNER"
 txna ApplicationArgs 1
 app_global_put
 int 1
 return
-main_l13:
+main_l11:
 txn Sender
 global CreatorAddress
 ==
@@ -91,10 +73,10 @@ len
 int 0
 >
 &&
-bnz main_l15
+bnz main_l13
 int 0
 return
-main_l15:
+main_l13:
 byte "PRICE"
 txna ApplicationArgs 1
 btoi
@@ -104,7 +86,7 @@ txna ApplicationArgs 2
 app_global_put
 int 1
 return
-main_l16:
+main_l14:
 global GroupSize
 int 2
 ==
@@ -128,10 +110,10 @@ gtxn 0 Sender
 ==
 &&
 &&
-bnz main_l18
+bnz main_l16
 int 0
 return
-main_l18:
+main_l16:
 byte "SOLD"
 byte "SOLD"
 app_global_get
@@ -141,12 +123,12 @@ btoi
 app_global_put
 int 1
 return
-main_l19:
+main_l17:
 txn Sender
 global CreatorAddress
 ==
 return
-main_l20:
+main_l18:
 txn NumAppArgs
 int 4
 ==

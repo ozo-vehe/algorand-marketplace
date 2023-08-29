@@ -13,7 +13,7 @@ import {
 /* eslint import/no-webpack-loader-syntax: off */
 import approvalProgram from "!!raw-loader!../contracts/marketplace_approval.teal";
 import clearProgram from "!!raw-loader!../contracts/marketplace_clear.teal";
-import {base64ToUTF8String, utf8ToBase64String} from "./conversions";
+import { base64ToUTF8String, utf8ToBase64String } from "./conversions";
 global.Buffer = global.Buffer || require('buffer').Buffer
 
 class Product {
@@ -35,6 +35,8 @@ const compileProgram = async (programSource) => {
     let encoder = new TextEncoder();
     let programBytes = encoder.encode(programSource);
     let compileResponse = await algodClient.compile(programBytes).do();
+    const compiledProgramBase64 = compileResponse.result;
+    console.log("Compiled Program Base64:", compiledProgramBase64);
     return new Uint8Array(Buffer.from(compileResponse.result, "base64"));
 }
 
@@ -104,8 +106,8 @@ export const buyProductAction = async (senderAddress, product, count) => {
     console.log("Buying product...");
 
     let params = await algodClient.getTransactionParams().do();
-    params.fee = algosdk.ALGORAND_MIN_TX_FEE;
-    params.flatFee = true;
+    // params.fee = algosdk.ALGORAND_MIN_TX_FEE;
+    // params.flatFee = true;
 
     // Build required app args as Uint8Array
     let buyArg = new TextEncoder().encode("buy")
@@ -180,24 +182,103 @@ export const deleteProductAction = async (senderAddress, index) => {
     console.log("Deleted app-id: ", appId);
 }
 
+// GIFT PRODUCT: ApplicationGiftTxn
+export const giftProductAction = async (senderAddress, product, receiver) => {
+    // try {
+    console.log("Gifting product...");
+
+    let params = await algodClient.getTransactionParams().do();
+    params.fee = algosdk.ALGORAND_MIN_TX_FEE;
+    params.flatFee = true;
+
+    // let response = await indexerClient
+    //     .lookupApplications(product.appId)
+    //     .includeAll(true)
+    //     .do();
+    // console.log("Respons...");
+    // console.log(response)
+    // if (response.application.deleted) {
+    //     return null;
+    // }
+    // let note = new TextEncoder().encode(marketplaceNote);
+    // let giftArg = new TextEncoder().encode("gift");
+    // let giftReciever = new TextEncoder().encode(receiver);
+
+    // let appArgs = [giftArg, giftReciever];
+
+    // Compile programs
+    // const compiledApprovalProgram = await compileProgram(approvalProgram)
+    // const compiledClearProgram = await compileProgram(clearProgram)
+
+    // Set Param ApplicationCallTxn
+    // console.log(appArgs);
+    // let appCallTxn = algosdk.makeApplicationCallTxnFromObject({
+    //     from: senderAddress,
+    //     appIndex: product.appId,
+    //     approvalProgram: compiledApprovalProgram,
+    //     clearProgram: compiledClearProgram,
+    //     onComplete: algosdk.OnApplicationComplete.NoOpOC,
+    //     suggestedParams: params,
+    //     appArgs: appArgs,
+    //     note: note,
+    // });
+    let appCallTxn = algosdk.makeApplicationCallTxnFromObject({
+        from: senderAddress,
+        appIndex: product.appId,
+        onComplete: algosdk.OnApplicationComplete.NoOpOC,
+        suggestedParams: params,
+        appArgs: [
+            new Uint8Array(Buffer.from('gift')), // Function name
+            new Uint8Array(algosdk.encodeAddress(receiver)) // New owner address
+        ]
+    });
+
+    console.log(appCallTxn);
+    // Get transaction ID
+    let txId = appCallTxn.txID().toString();
+
+    // Sign & submit the transaction
+    let signedTxn = await myAlgoConnect.signTransaction(appCallTxn.toByte());
+    console.log("Signed transaction with txID: %s", txId, signedTxn);
+    await algodClient.sendRawTransaction(signedTxn.blob).do();
+
+    // Wait for transaction to be confirmed
+    let confirmedTxn = await algosdk.waitForConfirmation(algodClient, txId, 4);
+
+    // Get the completed Transaction
+    console.log(
+        "Transaction " +
+        txId +
+        " confirmed in round " +
+        confirmedTxn["confirmed-round"]
+    );
+    console.log("Gifted Application Params");
+};
+
 // GET PRODUCTS: Use indexer
 export const getProductsAction = async () => {
     console.log("Fetching products...")
+
+
+    // Get latest round for minRound filter
+    const latestRound = await getStatus()
+
     let note = new TextEncoder().encode(marketplaceNote);
-    console.log(note);
     let encodedNote = Buffer.from(note).toString("base64");
-    console.log(encodedNote);
+
     // Step 1: Get all transactions by notePrefix (+ minRound filter for performance)
     let transactionInfo = await indexerClient.searchForTransactions()
         .notePrefix(encodedNote)
         .txType("appl")
-        .minRound(minRound)
+        .minRound(latestRound)
         .do();
-
-    // console.log(transactionInfo);
     let products = []
+    console.log(transactionInfo)
+    console.log(transactionInfo.transactions)
     for (const transaction of transactionInfo.transactions) {
         let appId = transaction["created-application-index"]
+        console.log("Getting product id")
+        console.log(appId)
         if (appId) {
             // Step 2: Get each application by application id
             let product = await getApplication(appId)
@@ -207,8 +288,25 @@ export const getProductsAction = async () => {
         }
     }
     console.log("Products fetched.")
+    console.log(products)
     return products
 }
+
+const getStatus = async () => {
+    try {
+        const status = await algodClient.status().do();
+        const latestRound = status['last-round'];
+
+        if (!latestRound) {
+            return minRound
+        }
+
+        return Number(latestRound) - 1000 || minRound
+    } catch (error) {
+        console.error('Error getting status:', error);
+        throw error;
+    }
+};
 
 const getApplication = async (appId) => {
     console.log(appId)
