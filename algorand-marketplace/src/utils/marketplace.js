@@ -183,54 +183,33 @@ export const deleteProductAction = async (senderAddress, index) => {
 }
 
 // GIFT PRODUCT: ApplicationGiftTxn
-export const giftProductAction = async (senderAddress, product, receiver) => {
+export const giftProductAction = async (senderAddress, appId, receiver) => {
     // try {
     console.log("Gifting product...");
 
     let params = await algodClient.getTransactionParams().do();
     params.fee = algosdk.ALGORAND_MIN_TX_FEE;
     params.flatFee = true;
+    
+    let giftArg = new TextEncoder().encode("gift");
+    let giftReciever = new Uint8Array(algosdk.encodeAddress(receiver)) // New owner address;
 
-    // let response = await indexerClient
-    //     .lookupApplications(product.appId)
-    //     .includeAll(true)
-    //     .do();
-    // console.log("Respons...");
-    // console.log(response)
-    // if (response.application.deleted) {
-    //     return null;
-    // }
-    // let note = new TextEncoder().encode(marketplaceNote);
-    // let giftArg = new TextEncoder().encode("gift");
-    // let giftReciever = new TextEncoder().encode(receiver);
-
-    // let appArgs = [giftArg, giftReciever];
+    let appArgs = [giftArg, giftReciever];
 
     // Compile programs
-    // const compiledApprovalProgram = await compileProgram(approvalProgram)
-    // const compiledClearProgram = await compileProgram(clearProgram)
+    const compiledApprovalProgram = await compileProgram(approvalProgram)
+    const compiledClearProgram = await compileProgram(clearProgram)
 
     // Set Param ApplicationCallTxn
-    // console.log(appArgs);
-    // let appCallTxn = algosdk.makeApplicationCallTxnFromObject({
-    //     from: senderAddress,
-    //     appIndex: product.appId,
-    //     approvalProgram: compiledApprovalProgram,
-    //     clearProgram: compiledClearProgram,
-    //     onComplete: algosdk.OnApplicationComplete.NoOpOC,
-    //     suggestedParams: params,
-    //     appArgs: appArgs,
-    //     note: note,
-    // });
-    let appCallTxn = algosdk.makeApplicationCallTxnFromObject({
+    console.log(appArgs);
+
+    const appCallTxn = algosdk.makeApplicationNoOpTxnFromObject({
         from: senderAddress,
-        appIndex: product.appId,
-        onComplete: algosdk.OnApplicationComplete.NoOpOC,
         suggestedParams: params,
-        appArgs: [
-            new Uint8Array(Buffer.from('gift')), // Function name
-            new Uint8Array(algosdk.encodeAddress(receiver)) // New owner address
-        ]
+        appIndex: appId,
+        approvalProgram: compiledApprovalProgram,
+        clearProgram: compiledClearProgram,
+        appArgs: appArgs,
     });
 
     console.log(appCallTxn);
@@ -254,6 +233,56 @@ export const giftProductAction = async (senderAddress, product, receiver) => {
     );
     console.log("Gifted Application Params");
 };
+
+// UPDATE PRODUCTS: 
+export const updateProductAction = async (senderAddress, appId, price, description) => {
+    console.log("Updating...");
+  
+    let params = await algodClient.getTransactionParams().do();
+  
+    // Build required app args as Uint8Array
+    let updateArg = new TextEncoder().encode("update");
+    // let newPrice = new TextEncoder().encode(price);
+    let newPrice = new Uint8Array(algosdk.encodeUint64(price));
+    let newDescription = new TextEncoder().encode(description);
+  
+    let appArgs = [updateArg, newPrice, newDescription];
+  
+    // Create ApplicationCallTxn
+    let appCallTxn = algosdk.makeApplicationCallTxnFromObject({
+      from: senderAddress,
+      appIndex: appId,
+      onComplete: algosdk.OnApplicationComplete.NoOpOC,
+      suggestedParams: params,
+      appArgs: appArgs,
+    });
+  
+    let txnArray = [appCallTxn];
+  
+    // Create group transaction out of previously build transactions
+    let groupID = algosdk.computeGroupID(txnArray);
+    for (let i = 0; i < 1; i++) txnArray[i].group = groupID;
+  
+    // Sign & submit the group transaction
+    let signedTxn = await myAlgoConnect.signTransaction(
+      txnArray.map((txn) => txn.toByte())
+    );
+    console.log("Signed group transaction");
+    let tx = await algodClient
+      .sendRawTransaction(signedTxn.map((txn) => txn.blob))
+      .do();
+  
+    // Wait for group transaction to be confirmed
+    let confirmedTxn = await algosdk.waitForConfirmation(algodClient, tx.txId, 4);
+  
+    // Notify about completion
+    console.log(
+      "Group transaction " +
+        tx.txId +
+        " confirmed in round " +
+        confirmedTxn["confirmed-round"]
+    );
+}
 
 // GET PRODUCTS: Use indexer
 export const getProductsAction = async () => {

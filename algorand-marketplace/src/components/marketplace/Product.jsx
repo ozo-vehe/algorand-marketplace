@@ -4,8 +4,9 @@ import { Badge, Button, Card, Col, FloatingLabel, Form, Stack } from "react-boot
 import { microAlgosToString, truncateAddress } from "../../utils/conversions";
 import Identicon from "../utils/Identicon";
 import GiftModal from "./GiftModal";
+import UpdateProduct from "./UpdateProduct";
 
-const Product = ({ address, product, giftProduct, buyProduct, deleteProduct }) => {
+const Product = ({ address, product, giftProduct, updateProduct, buyProduct, deleteProduct }) => {
     const { name, image, description, price, sold, appId, owner } =
         product;
 
@@ -41,6 +42,7 @@ const Product = ({ address, product, giftProduct, buyProduct, deleteProduct }) =
                                     >
                                         <i className="bi bi-trash"></i>
                                     </Button>
+                                    <UpdateProduct updateProduct={updateProduct} product={product} />
                                 </>
                             ) : (
                                 <>

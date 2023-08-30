@@ -4,7 +4,7 @@ import AddProduct from "./AddProduct";
 import Product from "./Product";
 import Loader from "../utils/Loader";
 import {NotificationError, NotificationSuccess} from "../utils/Notifications";
-import {buyProductAction, createProductAction, deleteProductAction, giftProductAction, getProductsAction,} from "../../utils/marketplace";
+import {buyProductAction, createProductAction, deleteProductAction, updateProductAction, giftProductAction, getProductsAction,} from "../../utils/marketplace";
 import PropTypes from "prop-types";
 import {Row} from "react-bootstrap";
 
@@ -96,6 +96,23 @@ const Products = ({address, fetchBalance}) => {
     }
   };
 
+  const updateProduct = async (product, price, description) => {
+    try {
+      console.log("Received");
+      console.log(price, description);
+      setLoading(true);
+      await updateProductAction(address, product.appId, price, description);
+      toast(<NotificationSuccess text="Product updated successfully"/>);
+      getProducts();
+      fetchBalance(address);
+    } catch (error) {
+      console.log(error)
+      toast(<NotificationError text="Failed to update product."/>);
+    } finally {
+      setLoading(false);
+    }
+  };
+
 	if (loading) {
     return <Loader/>;
   }
@@ -114,6 +131,7 @@ const Products = ({address, fetchBalance}) => {
                         buyProduct={buyProduct}
                         deleteProduct={deleteProduct}
                         giftProduct={giftProduct}
+                        updateProduct={updateProduct}
                         key={index}
                     />
                 ))}

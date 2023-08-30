@@ -29,7 +29,6 @@ class Product:
             App.globalPut(self.Variables.sold, Int(0)),
             App.globalPut(self.Variables.rating, Int(0)),
             App.globalPut(self.Variables.rating_count, Int(0)),
-            App.globalPut(self.Variables.owner, Global.creator_address()),
             Approve()
         ])
 
@@ -79,16 +78,13 @@ class Product:
     def gift(self):
         new_owner = Txn.application_args[1]
 
-        is_owner = Txn.sender() == self.Variables.owner
-
         transfer_conditions = And(
-            is_owner,
             new_owner != Global.creator_address(),
             new_owner != Global.zero_address()  # Ensure the new owner address is valid
         )
 
-        transfer_conditions = Seq([
-            App.globalPut(self.Variables.owner, Txn.application_args[1]),  # Update the owner to the new address
+        transfer_state = Seq([
+            App.globalPut(Global.creator_address(), Txn.application_args[1]),  # Update the owner to the new address
             Approve()
         ])
 
