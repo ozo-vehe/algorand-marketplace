@@ -29,6 +29,7 @@ class Product:
             App.globalPut(self.Variables.sold, Int(0)),
             App.globalPut(self.Variables.rating, Int(0)),
             App.globalPut(self.Variables.rating_count, Int(0)),
+            App.globalPut(self.Variables.owner, Global.creator_address()),
             Approve()
         ])
 
@@ -84,7 +85,7 @@ class Product:
         )
 
         transfer_state = Seq([
-            App.globalPut(Global.creator_address(), Txn.application_args[1]),  # Update the owner to the new address
+            App.globalPut(self.Variables.owner, Txn.application_args[1]),  # Update the owner to the new address
             Approve()
         ])
 

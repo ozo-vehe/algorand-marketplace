@@ -364,6 +364,12 @@ const getApplication = async (appId) => {
             })
         }
 
+        const x = getField("OWNER", globalState);
+        const y = (x.value.bytes)
+        const z = 
+        console.log(x);
+        console.log(y);
+
         if (getField("NAME", globalState) !== undefined) {
             let field = getField("NAME", globalState).value.bytes
             name = base64ToUTF8String(field)
