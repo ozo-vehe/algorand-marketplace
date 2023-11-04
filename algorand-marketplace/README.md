@@ -1,70 +1,53 @@
-# Getting Started with Create React App
+# Algorand Food Marketplace
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Overview
 
-## Available Scripts
+Algorand Food Marketplace is a decentralized marketplace built on the Algorand blockchain, providing a transparent and secure platform for food vendors and consumers. Vendors can list their unique products, including name, image, description, and price, while consumers can seamlessly buy these products using Algorand's native cryptocurrency, ALGO. Additionally, vendors can gift their products to a customer using the customer's Algorand wallet address. With features like real-time updates and ownership transfers through smart contracts, ALgorand Food Marketplace fosters a trustful and efficient ecosystem for street food enthusiasts.
 
-In the project directory, you can run:
+## Features
+- **Create Products:** Street food vendors can add their products to the marketplace by providing details such as name, image, description, and price.
+- **Buy Products:** Users can purchase street food products using Algorand's native cryptocurrency (ALGO). The smart contract ensures secure and transparent transactions. Users can also purchase multiple products.
+- **Gift Products:** Users have the option to gift a product to another Algorand wallet address. The smart contract handles the transfer of ownership securely.
+- **Update Product Information:** Street food vendors can update the price and description of their products through the marketplace.
 
-### `npm start`
+## Getting Started
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+1. **Install Dependencies:**
+   ```bash
+   npm install
+   ```
+   
+2. **Run the Application:**
+   ```bash
+   npm start
+   ```
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+3. **Access the Marketplace:**
+   Open your browser and navigate to [http://localhost:3000](http://localhost:3000).
 
-### `npm test`
+## Usage
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+1. **Add a Product:**
+   - Click on the "+" button to add a new street food product.
+   - Fill in the required details and save the product.
 
-### `npm run build`
+2. **Buy a Product:**
+   - Browse the list of available products.
+   - Enter the quantity and click "Buy" to purchase a product.
+   - You can increase the amount of product you want to by using the input field beside the `buy` button
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+3. **Gift a Product:**
+   - Select a product and click "Gift."
+   - Enter the recipient's Algorand wallet address.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+4. **Update Product Information:**
+   - For products you own, click "Update" to modify the price and description.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Contributing
+If you'd like to contribute to this project, please follow the standard Git workflow:
 
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+1. Fork the repository.
+2. Create a new branch (`git checkout -b feature/your-feature`).
+3. Make changes and commit (`git commit -m 'Add new feature'`).
+4. Push to the branch (`git push origin feature/your-feature`).
+5. Create a pull request.
