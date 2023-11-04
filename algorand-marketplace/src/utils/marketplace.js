@@ -186,18 +186,7 @@ export const giftProductAction = async (senderAddress, appId, receiver) => {
     params.fee = algosdk.ALGORAND_MIN_TX_FEE;
     params.flatFee = true;
 
-    // const decodedAddress = algosdk.decodeAddress(receiver);
-    // console.log(decodedAddress.publicKey);
-
     let giftArg = new TextEncoder().encode("gift");
-    let giftReciever = new Uint8Array(algosdk.encodeAddress(receiver)) // New owner address;
-    console.log(giftReciever);
-    console.log(algosdk.decodeAddress(receiver).publicKey)
-
-    let appArgs = [giftArg, giftReciever];
-
-    // Set Param ApplicationCallTxn
-    console.log(appArgs);
 
     const appCallTxn = algosdk.makeApplicationNoOpTxnFromObject({
         from: senderAddress,
@@ -237,7 +226,7 @@ export const updateProductAction = async (senderAddress, appId, price, descripti
     // Build required app args as Uint8Array
     let updateArg = new TextEncoder().encode("update");
     // let newPrice = new TextEncoder().encode(price);
-    let newPrice = new Uint8Array(algosdk.encodeUint64(price));
+    let newPrice = new Uint8Array(algosdk.encodeUint64(price * 1000000));
     let newDescription = new TextEncoder().encode(description);
 
     let appArgs = [updateArg, newPrice, newDescription];

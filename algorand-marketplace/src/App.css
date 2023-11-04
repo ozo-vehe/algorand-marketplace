@@ -42,3 +42,13 @@
 .formBtn button {
   min-width: 100px;
 }
+
+.coverContainer {
+  background: linear-gradient(#000000b8, black), url(./assets/img/background.png);
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+.coverImage {
+  border-radius: inherit;
+}

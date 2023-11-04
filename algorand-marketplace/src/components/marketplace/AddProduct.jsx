@@ -1,16 +1,25 @@
-import React, {useCallback, useState} from "react";
+import React, { useCallback, useState } from "react";
 import PropTypes from "prop-types";
-import {Button, FloatingLabel, Form, Modal} from "react-bootstrap";
-import {stringToMicroAlgos} from "../../utils/conversions";
+import { Button, FloatingLabel, Form, Modal } from "react-bootstrap";
+import { stringToMicroAlgos } from "../../utils/conversions";
 
-const AddProduct = ({createProduct}) => {
+/**
+ * AddProduct component provides a modal for adding a new product.
+ * @component
+ *
+ * @param {function} createProduct - Function to create a new product.
+ */
+const AddProduct = ({ createProduct }) => {
     const [name, setName] = useState("");
     const [image, setImage] = useState("");
     const [description, setDescription] = useState("");
     const [price, setPrice] = useState(0);
 
+    /**
+     * Checks if the form is filled.
+     */
     const isFormFilled = useCallback(() => {
-        return name && image && description && price > 0
+        return name && image && description && price > 0;
     }, [name, image, description, price]);
 
     const [show, setShow] = useState(false);
@@ -24,7 +33,7 @@ const AddProduct = ({createProduct}) => {
                 onClick={handleShow}
                 variant="dark"
                 className="rounded-pill px-0"
-                style={{width: "38px"}}
+                style={{ width: "38px" }}
             >
                 <i className="bi bi-plus"></i>
             </Button>
@@ -102,7 +111,7 @@ const AddProduct = ({createProduct}) => {
                                 name,
                                 image,
                                 description,
-                                price
+                                price,
                             });
                             handleClose();
                         }}
