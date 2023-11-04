@@ -7,7 +7,7 @@ import GiftModal from "./GiftModal";
 import UpdateProduct from "./UpdateProduct";
 
 const Product = ({ address, product, giftProduct, updateProduct, buyProduct, deleteProduct }) => {
-    const { name, image, description, price, sold, appId, owner } =
+    const { name, image, description, price, sold, appId, owner, gifted } =
         product;
 
     const [count, setCount] = useState(1)
@@ -32,44 +32,56 @@ const Product = ({ address, product, giftProduct, updateProduct, buyProduct, del
                         <Card.Title>{name}</Card.Title>
                         <Card.Text className="flex-grow-1">{description}</Card.Text>
                         <Form className="d-flex align-content-stretch flex-row gap-2">
-                            {product.owner === address ? (
-                                <>
-                                    <GiftModal giftProduct={giftProduct} product={product} />
-                                    <Button
-                                        variant="outline-danger"
-                                        onClick={() => deleteProduct(product)}
-                                        className="btn"
-                                    >
-                                        <i className="bi bi-trash"></i>
-                                    </Button>
-                                    <UpdateProduct updateProduct={updateProduct} product={product} />
-                                </>
+                            {/* {gifted === "true" ? (
+                                <Button
+                                    variant="dark"
+                                    disabled
+                                    className="w-100 py-3"
+                                >
+                                    Gifted
+                                </Button>
                             ) : (
-                                <>
-                                    <FloatingLabel
-                                        controlId="inputCount"
-                                        label="Count"
-                                        className="w-25"
-                                    >
-                                        <Form.Control
-                                            type="number"
-                                            value={count}
-                                            min="1"
-                                            max="10"
-                                            onChange={(e) => {
-                                                setCount(Number(e.target.value));
-                                            }}
-                                        />
-                                    </FloatingLabel>
-                                    <Button
-                                        variant="outline-dark"
-                                        onClick={() => buyProduct(product, count)}
-                                        className="w-75 py-3"
-                                    >
-                                        Buy for {microAlgosToString(price) * count} ALGO
-                                    </Button>
-                                </>
-                            )}
+                                <> */}
+                                    {product.owner === address ? (
+                                        <>
+                                            <GiftModal giftProduct={giftProduct} product={product} />
+                                            <Button
+                                                variant="outline-danger"
+                                                onClick={() => deleteProduct(product)}
+                                                className="btn"
+                                            >
+                                                <i className="bi bi-trash"></i>
+                                            </Button>
+                                            <UpdateProduct updateProduct={updateProduct} product={product} />
+                                        </>
+                                    ) : (
+                                        <>
+                                            <FloatingLabel
+                                                controlId="inputCount"
+                                                label="Count"
+                                                className="w-25"
+                                            >
+                                                <Form.Control
+                                                    type="number"
+                                                    value={count}
+                                                    min="1"
+                                                    max="10"
+                                                    onChange={(e) => {
+                                                        setCount(Number(e.target.value));
+                                                    }}
+                                                />
+                                            </FloatingLabel>
+                                            <Button
+                                                variant="outline-dark"
+                                                onClick={() => buyProduct(product, count)}
+                                                className="w-75 py-3"
+                                            >
+                                                Buy for {microAlgosToString(price) * count} ALGO
+                                            </Button>
+                                        </>
+                                    )}
+                                {/* </>
+                            )} */}
                         </Form>
                     </Card.Body>
                 </Card>

@@ -2,75 +2,46 @@
 txn ApplicationID
 int 0
 ==
-bnz main_l20
+bnz main_l16
 txn OnCompletion
 int DeleteApplication
 ==
-bnz main_l19
+bnz main_l15
 txna ApplicationArgs 0
 byte "buy"
 ==
-bnz main_l16
+bnz main_l12
 txna ApplicationArgs 0
 byte "update"
 ==
-bnz main_l13
+bnz main_l9
 txna ApplicationArgs 0
 byte "gift"
 ==
-bnz main_l10
-txna ApplicationArgs 0
-byte "give_feedback"
-==
-bnz main_l7
+bnz main_l6
 err
-main_l7:
+main_l6:
 txna ApplicationArgs 1
-btoi
-int 1
->=
-txna ApplicationArgs 1
-btoi
-int 5
-<=
-&&
-bnz main_l9
-int 0
-return
-main_l9:
-byte "RATING"
-byte "RATING"
+byte "OWNER"
 app_global_get
-txna ApplicationArgs 1
-btoi
-+
-app_global_put
-byte "RATING_COUNT"
-byte "RATING_COUNT"
-app_global_get
-int 1
-+
-app_global_put
-int 1
-return
-main_l10:
-txna ApplicationArgs 1
-global CreatorAddress
 !=
 txna ApplicationArgs 1
 global ZeroAddress
 !=
 &&
-bnz main_l12
+bnz main_l8
 int 0
 return
-main_l12:
+main_l8:
 byte "OWNER"
 txna ApplicationArgs 1
 app_global_put
+byte "GIFTED"
+byte "true"
+app_global_put
 int 1
 return
-main_l13:
+main_l9:
 txn Sender
 global CreatorAddress
 ==
@@ -84,10 +55,10 @@ len
 int 0
 >
 &&
-bnz main_l15
+bnz main_l11
 int 0
 return
-main_l15:
+main_l11:
 byte "PRICE"
 txna ApplicationArgs 1
 btoi
@@ -97,7 +68,7 @@ txna ApplicationArgs 2
 app_global_put
 int 1
 return
-main_l16:
+main_l12:
 global GroupSize
 int 2
 ==
@@ -105,7 +76,8 @@ gtxn 1 TypeEnum
 int pay
 ==
 gtxn 1 Receiver
-global CreatorAddress
+byte "OWNER"
+app_global_get
 ==
 &&
 gtxn 1 Amount
@@ -121,10 +93,10 @@ gtxn 0 Sender
 ==
 &&
 &&
-bnz main_l18
+bnz main_l14
 int 0
 return
-main_l18:
+main_l14:
 byte "SOLD"
 byte "SOLD"
 app_global_get
@@ -134,12 +106,12 @@ btoi
 app_global_put
 int 1
 return
-main_l19:
+main_l15:
 txn Sender
 global CreatorAddress
 ==
 return
-main_l20:
+main_l16:
 txn NumAppArgs
 int 4
 ==
@@ -169,14 +141,13 @@ app_global_put
 byte "SOLD"
 int 0
 app_global_put
-byte "RATING"
-int 0
-app_global_put
-byte "RATING_COUNT"
-int 0
+byte "GIFTED"
+byte "false"
 app_global_put
 byte "OWNER"
 global CreatorAddress
+byte ""
+concat
 app_global_put
 int 1
 return

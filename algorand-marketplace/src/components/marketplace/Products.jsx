@@ -82,7 +82,6 @@ const Products = ({address, fetchBalance}) => {
   const giftProduct = async (product, receiver) => {
     try {
       console.log("Received");
-      console.log(receiver);
       setLoading(true);
       await giftProductAction(address, product.appId, receiver);
       toast(<NotificationSuccess text="Product gifted successfully"/>);

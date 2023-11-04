@@ -7,15 +7,13 @@ class Product:
         description = Bytes("DESCRIPTION")
         price = Bytes("PRICE")
         sold = Bytes("SOLD")
-        rating = Bytes("RATING")
-        rating_count = Bytes("RATING_COUNT")
         owner = Bytes("OWNER")
+        gifted = Bytes("GIFTED")
 
     class AppMethods:
         buy = Bytes("buy")
         update = Bytes("update")
         gift = Bytes("gift")
-        give_feedback = Bytes("give_feedback")
 
     def application_creation(self):
         return Seq([
@@ -27,9 +25,8 @@ class Product:
             App.globalPut(self.Variables.description, Txn.application_args[2]),
             App.globalPut(self.Variables.price, Btoi(Txn.application_args[3])),
             App.globalPut(self.Variables.sold, Int(0)),
-            App.globalPut(self.Variables.rating, Int(0)),
-            App.globalPut(self.Variables.rating_count, Int(0)),
-            App.globalPut(self.Variables.owner, Global.creator_address()),
+            App.globalPut(self.Variables.gifted, Bytes("false")),
+            App.globalPut(self.Variables.owner, Concat(Global.creator_address(), Bytes(""))),
             Approve()
         ])
 
@@ -39,7 +36,7 @@ class Product:
 
         valid_payment_to_seller = And(
             Gtxn[1].type_enum() == TxnType.Payment,
-            Gtxn[1].receiver() == Global.creator_address(),
+            Gtxn[1].receiver() == App.globalGet(self.Variables.owner),
             Gtxn[1].amount() == App.globalGet(self.Variables.price) * Btoi(count),
             Gtxn[1].sender() == Gtxn[0].sender(),
         )
@@ -80,40 +77,17 @@ class Product:
         new_owner = Txn.application_args[1]
 
         transfer_conditions = And(
-            new_owner != Global.creator_address(),
+            new_owner != App.globalGet(self.Variables.owner),
             new_owner != Global.zero_address()  # Ensure the new owner address is valid
         )
 
         transfer_state = Seq([
-            App.globalPut(self.Variables.owner, Txn.application_args[1]),  # Update the owner to the new address
+            App.globalPut(self.Variables.owner, new_owner),  # Update the owner to the new address
+            App.globalPut(self.Variables.gifted, Bytes("true")),
             Approve()
         ])
 
         return If(transfer_conditions).Then(transfer_state).Else(Reject())
-
-    def give_feedback(self):
-        rating = Btoi(Txn.application_args[1])
-
-        valid_rating = And(
-            rating >= Int(1),
-            rating <= Int(5)
-        )
-
-        update_feedback = Seq([
-            App.globalPut(self.Variables.rating, App.globalGet(self.Variables.rating) + rating),
-            App.globalPut(self.Variables.rating_count, App.globalGet(self.Variables.rating_count) + Int(1)),
-            Approve()
-        ])
-
-        return If(valid_rating).Then(update_feedback).Else(Reject())
-
-    def average_rating(self):
-        rating = App.globalGet(self.Variables.rating)
-        rating_count = App.globalGet(self.Variables.rating_count)
-
-        return If(rating_count > Int(0)).Then(rating / rating_count).Else(Int(0))
-
-
 
     def application_deletion(self):
         return Return(Txn.sender() == Global.creator_address())
@@ -125,7 +99,6 @@ class Product:
             [Txn.application_args[0] == self.AppMethods.buy, self.buy()],
             [Txn.application_args[0] == self.AppMethods.update, self.update()],
             [Txn.application_args[0] == self.AppMethods.gift, self.gift()],
-            [Txn.application_args[0] == self.AppMethods.give_feedback, self.give_feedback()], 
         )
 
     def approval_program(self):
